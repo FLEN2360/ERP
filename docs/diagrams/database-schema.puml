@@ -1,0 +1,191 @@
+@startuml DatabaseSchema
+' ==========================
+' 水晶男孩 ERP Database Schema
+' ==========================
+
+'===== 供應商 / 社群來源 =====
+class 供應商 {
+  -供應商編號: String
+  -名稱: String
+  -聯絡方式: String       ' LINE / Facebook
+  -帳號ID: String          ' LINE ID / FB Page ID
+  +取得資訊()
+}
+
+class 水晶男孩 {
+  -供應商編號: String
+  -名稱: String
+  -聯絡方式: String       ' LINE / Facebook
+  -帳號ID: String          ' LINE ID / FB Page ID
+  +取得資訊()
+}
+
+class 訊息紀錄 {
+  -訊息編號: String
+  -供應商編號: String
+  -平台: String            ' LINE / Facebook
+  -內容: String
+  -圖片網址: String
+  -發送時間: Date
+}
+
+class 社群訂單 {
+  -社群訂單編號: String
+  -供應商編號: String
+  -平台: String            ' FB / LINE
+  -下單日期: Date
+  -總金額: double
+  -狀態: String           ' 已確認 / 待確認 / 已出貨
+  +確認訂單()
+  +取消訂單()
+}
+
+'===== 商品 / 水晶商品 =====
+class 水晶商品 {
+  -商品編號: String
+  -名稱: String
+  -分類: String            ' 手鍊/項鍊/原石/水晶球
+  -材質: String            ' 紫水晶/白水晶/金曜石…
+  -尺寸: String            ' mm/重量/直徑
+  -單價: double
+  -庫存量: int
+  +更新庫存()
+}
+
+class 商品圖片 {
+  -圖片編號: String
+  -商品編號: String
+  -網址: String
+}
+
+'===== 採購 =====
+class 採購單 {
+  -採購單編號: String
+  -供應商編號: String
+  -下單來源: String        ' LINE / FB Messenger
+  -下單日期: Date
+  -狀態: String            ' 已下單 / 部分到貨 / 已完成
+  +更新狀態()
+}
+
+class 採購品項 {
+  -採購品項編號: String
+  -採購單編號: String
+  -商品編號: String
+  -數量: int
+  -單價: double
+  -小計: double
+  +計算小計()
+}
+
+'===== 進貨 =====
+class 進貨單 {
+  -進貨單編號: String
+  -採購單編號: String
+  -收貨日期: Date
+  -驗收人員: String
+  -狀態: String            ' 部分入庫 / 已入庫
+  +確認進貨()
+}
+
+class 進貨品項 {
+  -進貨品項編號: String
+  -進貨單編號: String
+  -商品編號: String
+  -到貨數量: int
+  -合格數量: int
+  -不良數量: int
+}
+
+'===== 庫存 =====
+class 庫存 {
+  -商品編號: String
+  -庫位: String
+  -現有庫存: int
+  +增加()
+  +扣減()
+}
+'===== 人員管理 =====
+class 人員 {
+- 人員編號: String
+- 姓名: String
+- 職位: String
+- 帳號: String
+- 密碼: String
+- 聯絡方式: String
+}
+
+
+class 角色 {
+- 角色編號: String
+- 角色名稱: String
+- 說明: String
+}
+
+
+class 權限 {
+- 權限編號: String
+- 功能名稱: String
+- 描述: String
+}
+'===== 登入流程 =====
+
+class Token {
+- Token值: String
+- 建立時間: DateTime
+- 到期時間: DateTime
+- 人員編號: String
+}
+
+
+'===== 部門與職位 =====
+class 部門 {
+- 部門編號: String
+- 部門名稱: String
+- 主管編號: String
+}
+
+
+class 職位 {
+- 職位編號: String
+- 職位名稱: String
+- 說明: String
+}
+
+
+'===== 審批流程（採購單審核） =====
+class 審批紀錄 {
+- 審批編號: String
+- 採購單編號: String
+- 審批人員編號: String
+- 審批時間: DateTime
+- 審批結果: String
+- 備註: String
+}
+'===== 類別間關係 =====
+水晶男孩 "1" -- "0..*" 訊息紀錄
+水晶男孩 "1" -- "0..*" 社群訂單
+
+供應商 "1" -- "0..*" 採購單
+採購單 "1" -- "1..*" 採購品項
+
+水晶商品 "1" -- "0..*" 商品圖片
+水晶商品 "1" -- "0..*" 採購品項
+水晶商品 "1" -- "0..*" 進貨品項
+
+採購單 "1" -- "0..*" 進貨單
+進貨單 "1" -- "1..*" 進貨品項
+
+庫存 "1" -- "0..*" 水晶商品
+'===== 關聯（人員管理） =====
+人員 "*" --> "1" 角色
+角色 "1" --> "*" 權限
+職位 "1" --> "*" 權限
+
+'===== 新增關聯 =====
+人員 "*" --> "1" 部門
+人員 "*" --> "1" 職位
+人員 "1" --> "*" Token
+採購單 "1" --> "*" 審批紀錄
+審批紀錄 "*" --> "1" 人員
+@enduml
