@@ -37,7 +37,6 @@ export default async function proxy(request: NextRequest) {
   const isPublic = PUBLIC_ROUTES.some((path) => pathname.startsWith(path));
 
   if (isStatic || isPublic) {
-    console.log('isStaticisPublicpathname', pathname);
     return NextResponse.next();
   }
 
@@ -46,7 +45,6 @@ export default async function proxy(request: NextRequest) {
   });
 
   if (!session) {
-    console.log('sessionpathname', pathname);
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('from', pathname);
     return NextResponse.redirect(loginUrl);

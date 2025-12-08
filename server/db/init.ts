@@ -1,14 +1,16 @@
 import { Client } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { exit } from 'process';
 
 import { auth } from '@/lib/auth';
+import { env } from '@/env';
 
 import { roles } from './schema';
 
 async function seed() {
-  const email = process.env.WEB_ADMIN_EMAIL ?? 'admin@example.com';
-  const password = process.env.WEB_ADMIN_PASSWORD ?? 'adminpassword';
-  const name = process.env.WEB_ADMIN_USERNAME ?? 'admin';
+  const email = env.WEB_ADMIN_EMAIL || 'admin@example.com';
+  const password = env.WEB_ADMIN_PASSWORD || 'adminpassword';
+  const name = env.WEB_ADMIN_USERNAME || 'admin';
 
   console.log('init...');
 
@@ -52,7 +54,7 @@ async function seed() {
       await client.end();
       return;
     }
-
+    console.log('Create admin user...');
     const user = await auth.api.signUpEmail({
       body: {
         email: email,
@@ -79,7 +81,8 @@ async function seed() {
 
   console.log('init completed');
   await client.end();
-  return;
 }
 
 seed();
+
+exit(0);
