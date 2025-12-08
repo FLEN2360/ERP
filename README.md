@@ -4,6 +4,12 @@
 
 無論是使用 Linux OR Windows 都需要安裝 docker
 
+### 請前往 Better-auth 官網生成 自己的 Secret Key
+
+[獲取 Secret Key](https://www.better-auth.com/docs/installation#set-environment-variables)
+
+將其寫入 .env
+
 ### 使用 Linux 開發
 
 ```bash
