@@ -81,8 +81,7 @@ async function seed() {
 
   console.log('init completed');
   await client.end();
+  exit(0);
 }
 
 seed();
-
-exit(0);
